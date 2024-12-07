@@ -4,7 +4,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 class ClientPanel extends JFrame {
-  private ArrayList<Game> games = new ArrayList<>();
+    private ArrayList<Game> games = new ArrayList<>();
+    private ArrayList<Game> filteredGames = new ArrayList<>();
     private DefaultListModel<String> listModel = new DefaultListModel<>();
     private JList<String> gameList;
     private JTextArea descriptionArea;
@@ -31,7 +32,7 @@ class ClientPanel extends JFrame {
         createBottomPanel();
 
         // Populate the game list
-        setupGameList();
+        setupGameList(games);
 
         setVisible(true);
     }
@@ -171,65 +172,62 @@ class ClientPanel extends JFrame {
 }
 
 
-    private void setupGameList() {
+     private void setupGameList(ArrayList<Game> gameListSource) {
         listModel.clear();
-        for (Game game : games) {
+        filteredGames.clear();
+
+        for (Game game : gameListSource) {
             listModel.addElement(game.getName() + " - $" + game.getPrice());
+            filteredGames.add(game); // Update filtered list to match displayed games
         }
     }
 
 
-private void updateDescription() {
-    int selectedIndex = gameList.getSelectedIndex();
-    if (selectedIndex >= 0) {
-        Game selectedGame = games.get(selectedIndex);
-
-        // Update description text
-        descriptionArea.setText(selectedGame.getDescription());
-
-        // Update the image
-        ImageIcon gameImage = new ImageIcon(selectedGame.getImagePath());
-        Image scaledImage = gameImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        imageLabel.setIcon(new ImageIcon(scaledImage));
+ private void updateDescription() {
+        int selectedIndex = gameList.getSelectedIndex();
+        if (selectedIndex >= 0) {
+            Game selectedGame = filteredGames.get(selectedIndex); // Use filteredGames
+            descriptionArea.setText(selectedGame.getDescription());
+            ImageIcon gameImage = new ImageIcon(selectedGame.getImagePath());
+            Image scaledImage = gameImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
+        }
     }
-}
 
 
     private void searchGames() {
-        String searchText = searchField.getText().toLowerCase();
-        listModel.clear();
+    String searchText = searchField.getText().toLowerCase();
+    listModel.clear();
+    filteredGames.clear(); // Ensure this is cleared before adding new results
 
-        for (Game game : games) {
-            if (game.getName().toLowerCase().contains(searchText)) {
-                listModel.addElement(game.getName() + " - $" + game.getPrice());
-            }
-        }
-
-        if (listModel.isEmpty()) {
-            listModel.addElement("No games found.");
+    for (Game game : games) {
+        if (game.getName().toLowerCase().contains(searchText)) {
+            listModel.addElement(game.getName() + " - $" + game.getPrice());
+            filteredGames.add(game); // Add matching games to filteredGames
         }
     }
+
+    if (listModel.isEmpty()) {
+        listModel.addElement("No games found.");
+    }
+}
 
     private void addToCart() {
         int selectedIndex = gameList.getSelectedIndex();
         if (selectedIndex >= 0) {
-            Game selectedGame = games.get(selectedIndex);
-            cart.addGame(selectedGame); // Add game to the cart
-            JOptionPane.showMessageDialog(this,
-                    selectedGame.getName() + " has been added to your cart.",
-                    "Game Added", JOptionPane.INFORMATION_MESSAGE);
+            Game selectedGame = filteredGames.get(selectedIndex); // Use filteredGames
+            cart.addGame(selectedGame);
+            JOptionPane.showMessageDialog(this, selectedGame.getName() + " added to cart.");
         } else {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a game first.",
-                    "No Game Selected", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No game selected.");
         }
     }
 
     private void openCartPanel() {
-        if (cart.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Your cart is empty.", "Cart", JOptionPane.WARNING_MESSAGE);
-        } else {
+        if (!cart.isEmpty()) {
             new CartPanel(cart);
+        } else {
+            JOptionPane.showMessageDialog(this, "Your cart is empty.");
         }
     }
 }
