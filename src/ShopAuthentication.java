@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
 import javax.swing.*;
+import java.awt.*;
+
 
 public class ShopAuthentication {
 
@@ -8,23 +10,45 @@ public class ShopAuthentication {
         JFrame frame = new JFrame("Welcome to Our Shop");
         frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
 
+        JLabel titleLabel = new JLabel("Welcome to Our Shop", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        frame.add(titleLabel, BorderLayout.NORTH);
+        
         // Create buttons for Admin and Client
-        JButton adminButton = new JButton("Admin");
-        JButton clientButton = new JButton("Client");
+       JButton adminButton = new JButton("Admin");
+        adminButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        adminButton.setIcon(new ImageIcon("admin_icon.png")); // Replace with your icon path
+        adminButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        adminButton.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        // Add action listener for Admin button
-        adminButton.addActionListener(e -> showAdminLoginDialog(frame));
+         JButton clientButton = new JButton("Client");
+        clientButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        clientButton.setIcon(new ImageIcon("client_icon.png")); // Replace with your icon path
+        clientButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        clientButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        
 
-        // Add action listener for Client button
+       adminButton.addActionListener(e -> showAdminLoginDialog(frame));
         clientButton.addActionListener(e -> showClientLoginDialog(frame));
 
         // Add buttons to a panel
-        JPanel panel = new JPanel();
-        panel.add(adminButton);
-        panel.add(clientButton);
+          JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
+        buttonPanel.add(adminButton);
+        buttonPanel.add(clientButton);
 
-        frame.add(panel);
+        frame.add(buttonPanel, BorderLayout.CENTER);
+
+        // Add footer
+        JLabel footerLabel = new JLabel("© 2024 ShopApp Inc.", JLabel.CENTER);
+        footerLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        footerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        frame.add(footerLabel, BorderLayout.SOUTH);
+
+        // Set frame to be visible
         frame.setVisible(true);
     }
 
@@ -84,6 +108,7 @@ public class ShopAuthentication {
 
         // Create a label and center-align it
         JLabel welcomeLabel = new JLabel("Welcome to the Admin Panel", JLabel.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 20));
 
         // Set a BorderLayout and add the label to the top
         adminFrame.setLayout(new BorderLayout());

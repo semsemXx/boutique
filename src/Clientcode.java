@@ -4,81 +4,108 @@ import java.awt.*;
 import java.util.ArrayList;
 
 class ClientPanel extends JFrame {
-    private ArrayList<Game> games = new ArrayList<>();
+  private ArrayList<Game> games = new ArrayList<>();
     private DefaultListModel<String> listModel = new DefaultListModel<>();
     private JList<String> gameList;
     private JTextArea descriptionArea;
     private JTextField searchField;
     private Cart cart;
+    private JLabel imageLabel;
 
-   public ClientPanel() {
-    cart = new Cart(); // Initialize the Cart
+    public ClientPanel() {
+        cart = new Cart(); // Initialize the Cart
 
-    setTitle("Client Panel");
-    setSize(600, 400);
-    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    setLayout(new BorderLayout());
+        setTitle("Client Panel");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+        setLocationRelativeTo(null); // Center the window
+        setBackground(new Color(240, 240, 240));
 
-    // Load games into the ArrayList
-    loadGames();
+        // Load games into the ArrayList
+        loadGames();
 
-    // Top Panel: Search bar
-    JPanel topPanel = new JPanel();
-    topPanel.setLayout(new BorderLayout());
-    searchField = new JTextField();
-    JButton searchButton = new JButton("Search");
-    searchButton.addActionListener(e -> searchGames());
-    topPanel.add(searchField, BorderLayout.CENTER);
-    topPanel.add(searchButton, BorderLayout.EAST);
-    add(topPanel, BorderLayout.NORTH);
+        // Create UI components
+        createTopPanel();
+        createCenterPanel();
+        createBottomPanel();
 
-    // Center Panel: Game list and description area
-    JPanel centerPanel = new JPanel();
-    centerPanel.setLayout(new GridLayout(1, 2, 10, 10));
+        // Populate the game list
+        setupGameList();
 
-    // Game List
-    gameList = new JList<>(listModel);
-    gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    gameList.addListSelectionListener(e -> updateDescription());
-    JScrollPane listScrollPane = new JScrollPane(gameList);
-    centerPanel.add(listScrollPane);
-    
-    descriptionArea = new JTextArea();
-descriptionArea.setEditable(false);
-descriptionArea.setLineWrap(true);
-descriptionArea.setWrapStyleWord(true);
-JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+        setVisible(true);
+    }
 
+    private void createTopPanel() {
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    // Initialize the image label
-    imageLabel = new JLabel();
-    imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        JLabel searchLabel = new JLabel("Search:");
+        searchLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        searchField = new JTextField();
+        JButton searchButton = new JButton("Search");
+        searchButton.setFont(new Font("Arial", Font.BOLD, 14));
+        searchButton.addActionListener(e -> searchGames());
 
-    // Add the image label and description area to a description panel
-    JPanel descriptionPanel = new JPanel(new BorderLayout());
-    descriptionPanel.add(imageLabel, BorderLayout.NORTH);
-    descriptionPanel.add(descriptionScrollPane, BorderLayout.CENTER);
+        topPanel.add(searchLabel, BorderLayout.WEST);
+        topPanel.add(searchField, BorderLayout.CENTER);
+        topPanel.add(searchButton, BorderLayout.EAST);
 
-    // Add the description panel to the center panel
-    centerPanel.add(descriptionPanel);
+        add(topPanel, BorderLayout.NORTH);
+    }
 
-    add(centerPanel, BorderLayout.CENTER);
+    private void createCenterPanel() {
+        JPanel centerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    // Bottom Panel: Add to Cart and View Cart buttons
-    JPanel bottomPanel = new JPanel();
-    JButton addToCartButton = new JButton("Add to Cart");
-    addToCartButton.addActionListener(e -> addToCart());
-    JButton viewCartButton = new JButton("View Cart");
-    viewCartButton.addActionListener(e -> openCartPanel());
-    bottomPanel.add(addToCartButton);
-    bottomPanel.add(viewCartButton);
-    add(bottomPanel, BorderLayout.SOUTH);
+        // Game List Panel
+        JPanel listPanel = new JPanel(new BorderLayout(10, 10));
+        listPanel.setBorder(BorderFactory.createTitledBorder("Available Games"));
+        gameList = new JList<>(listModel);
+        gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        gameList.addListSelectionListener(e -> updateDescription());
+        JScrollPane listScrollPane = new JScrollPane(gameList);
+        listPanel.add(listScrollPane, BorderLayout.CENTER);
 
-    // Populate the game list
-    setupGameList();
+        // Description Panel
+        JPanel descriptionPanel = new JPanel(new BorderLayout(10, 10));
+        descriptionPanel.setBorder(BorderFactory.createTitledBorder("Game Details"));
 
-    setVisible(true);
-}
+        imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        descriptionPanel.add(imageLabel, BorderLayout.NORTH);
+
+        descriptionArea = new JTextArea();
+        descriptionArea.setEditable(false);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+        descriptionPanel.add(descriptionScrollPane, BorderLayout.CENTER);
+
+        centerPanel.add(listPanel);
+        centerPanel.add(descriptionPanel);
+
+        add(centerPanel, BorderLayout.CENTER);
+    }
+
+    private void createBottomPanel() {
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JButton addToCartButton = new JButton("Add to Cart");
+        addToCartButton.setFont(new Font("Arial", Font.BOLD, 14));
+        addToCartButton.addActionListener(e -> addToCart());
+
+        JButton viewCartButton = new JButton("View Cart");
+        viewCartButton.setFont(new Font("Arial", Font.BOLD, 14));
+        viewCartButton.addActionListener(e -> openCartPanel());
+
+        bottomPanel.add(addToCartButton);
+        bottomPanel.add(viewCartButton);
+
+        add(bottomPanel, BorderLayout.SOUTH);
+    }
 
    private void loadGames() {
     games.add(new Game(
@@ -151,7 +178,6 @@ JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
         }
     }
 
-   private JLabel imageLabel;
 
 private void updateDescription() {
     int selectedIndex = gameList.getSelectedIndex();
